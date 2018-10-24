@@ -1,6 +1,6 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.24;
 
-import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 interface ERC20
 {
