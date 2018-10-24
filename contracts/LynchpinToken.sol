@@ -1,5 +1,7 @@
 pragma solidity ^0.4.25;
 
+import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
+
 interface ERC20
 {
 	function totalSupply() view external returns (uint _totalSupply);
@@ -15,29 +17,27 @@ interface ERC20
 
 contract LynchpinToken is ERC20
 {
-	string public name;
-	string public symbol;
-	uint public totalSupply;
-	uint8 public decimals = 18;
+	using SafeMath for uint256;
+
+	string 	public name        = "Lynchpin";
+	string 	public symbol      = "LYN";
+	uint8 	public decimals    = 18;
+	uint 	public totalSupply = 5000000 * (10 ** uint(decimals));
+	address public owner       = 0x18C9801811661Dce734644FF0A3aeFd43aD17908; // to be UPDATED
 
 	mapping (address => uint) public balanceOf;
 	mapping (address => mapping (address => uint)) public allowance;
 
-	event Transfer(address indexed from, address indexed to, uint value);
-	event Burn(address indexed from, uint value);
-
-	constructor(string tokenName, string tokenSymbol, uint initialSupply, address _owner) public
+	constructor() public
 	{
-		name = tokenName;
-		symbol = tokenSymbol;
-		totalSupply = initialSupply * 10 ** uint(decimals);
-		balanceOf[_owner] = totalSupply;
+		balanceOf[owner] = totalSupply;
 	}
 
 	function totalSupply() view external returns (uint _totalSupply)
 	{
 		return totalSupply;
 	}
+
 	function balanceOf(address _owner) view external returns (uint balance)
 	{
 		return balanceOf[_owner];
@@ -50,15 +50,13 @@ contract LynchpinToken is ERC20
 	function _transfer(address _from, address _to, uint _value) internal
 	{
 		require(_to != 0x0);
-		require(balanceOf[_from] >= _value);
-		require(balanceOf[_to] + _value > balanceOf[_to]);
 
-		uint previousBalances = balanceOf[_from] + balanceOf[_to];
-		balanceOf[_from] -= _value;
-		balanceOf[_to] += _value;
+		uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
+		balanceOf[_from] = balanceOf[_from].sub(_value);
+		balanceOf[_to] = balanceOf[_to].add(_value);
 
 		emit Transfer(_from, _to, _value);
-		assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+		assert(balanceOf[_from].add(balanceOf[_to]) == previousBalances);
 	}
 
 	function transfer(address _to, uint _value) public returns (bool success)
@@ -69,8 +67,7 @@ contract LynchpinToken is ERC20
 
 	function transferFrom(address _from, address _to, uint _value) public returns (bool success)
 	{
-		require(_value <= allowance[_from][msg.sender]);
-		allowance[_from][msg.sender] -= _value;
+		allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
 		_transfer(_from, _to, _value);
 		return true;
 	}
@@ -79,26 +76,6 @@ contract LynchpinToken is ERC20
 	{
 		allowance[msg.sender][_spender] = _value;
 		emit Approval(msg.sender, _spender, _value);
-		return true;
-	}
-
-	function burn(uint _value) public returns (bool success)
-	{
-		require(balanceOf[msg.sender] >= _value);
-		balanceOf[msg.sender] -= _value;
-		totalSupply -= _value;
-		emit Burn(msg.sender, _value);
-		return true;
-	}
-
-	function burnFrom(address _from, uint _value) public returns (bool success)
-	{
-		require(balanceOf[_from] >= _value);
-		require(_value <= allowance[_from][msg.sender]);
-		balanceOf[_from] -= _value;
-		allowance[_from][msg.sender] -= _value;
-		totalSupply -= _value;
-		emit Burn(_from, _value);
 		return true;
 	}
 
