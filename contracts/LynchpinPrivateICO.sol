@@ -167,6 +167,7 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
     mapping(address => bool) public isWhitelisted;
 
     event LogAddedToWhitelist(address indexed _contributor);
+    event LogTokenRateUpdated(uint256 _newRate);
     event LogSaleClosed();
 
     constructor() public
@@ -195,6 +196,13 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
         require(!isWhitelisted[_contributor]);
         isWhitelisted[_contributor] = true;
         emit LogAddedToWhitelist(_contributor);
+    }
+
+    function updateTokenRate(uint256 _tokeninOneEther ) external onlyOwner
+    {
+        require (_tokeninOneEther > 0);
+        tokeninOneEther = _tokeninOneEther;
+        emit LogTokenRateUpdated(_tokeninOneEther);
     }
 
     function closeSale() external onlyOwner
