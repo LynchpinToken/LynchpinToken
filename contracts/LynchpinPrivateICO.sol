@@ -159,8 +159,13 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
     uint256 public tokeninOneEther = 100;
     uint256 public maxTokensToSell = 2000000 * 10**18;
     uint256 public tokenSold;
-    uint256 public lockingTime;
     bool crowdsaleClosed = false;
+
+    uint256 LOCK_PERIOD_START    = 1556668800;    // Wednesday, May 1, 2019 12:00:00 AM         start time
+    uint256 LOCK_PERIOD_9_MONTH  = 1580515200;    // Saturday, February 1, 2020 12:00:00 AM     9th month done
+    uint256 LOCK_PERIOD_10_MONTH = 1583020800;    // Sunday, March 1, 2020 12:00:00 AM          10th  month done
+    uint256 LOCK_PERIOD_11_MONTH = 1585699200;    // Wednesday, April 1, 2020 12:00:00 AM       11th month done
+    uint256 LOCK_PERIOD_END      = 1588291200;    // Friday, May 1, 2020 12:00:00 AM            12th month done - lock-in period ends
 
     mapping(address => uint256) public tokensOwed;
     mapping(address => uint256) public ethContribution;
@@ -207,21 +212,39 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
 
     function closeSale() external onlyOwner
     {
+        require (now > LOCK_PERIOD_START);
         lynT.transfer(msg.sender, lynT.balanceOf(address(this)));
         beneficiary.transfer(address(this).balance);
         crowdsaleClosed = true;
-        lockingTime = now + 365 * 1 days;
         emit LogSaleClosed();
     }
 
     function withdrawMyTokens () external
     {
         require (crowdsaleClosed);
-        require (now >= lockingTime);
         require (tokensOwed[msg.sender] > 0);
+        require (now > LOCK_PERIOD_9_MONTH);
 
-        uint256 toSend = tokensOwed[msg.sender];
+        uint256 penalty = 0;
+        if(now > LOCK_PERIOD_END)
+            penalty = 0;
+        else if(now > LOCK_PERIOD_11_MONTH)
+            penalty = 20;
+        else if(now > LOCK_PERIOD_10_MONTH)
+            penalty = 30;
+        else
+            penalty = 40;
+
+        uint256 tokenBought = tokensOwed[msg.sender];
+        uint256 toSend = tokenBought.sub(tokenBought.mul(penalty).div(100));
         tokensOwed[msg.sender] = 0;
         lynT.transfer(msg.sender, toSend);
+    }
+
+    function withdrawPenaltyTokens() external onlyOwner
+    {
+        require (now > LOCK_PERIOD_END);
+        lynT.transfer(msg.sender, lynT.balanceOf(address(this)));
+        beneficiary.transfer(address(this).balance);
     }
 }
