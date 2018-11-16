@@ -153,7 +153,7 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
 {
     using SafeMath for uint256;
 
-    LynchpinToken public lynT = LynchpinToken(0x0548CFC3ad5d54D49433E5942DEcD2EF3170EB44);
+    LynchpinToken public lynT = LynchpinToken(0xB0B1685f55843D03739c7D9b0A230F1B7DcF03D5);
     address public beneficiary = 0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba;
 
     uint256 public tokeninOneEther = 100;
