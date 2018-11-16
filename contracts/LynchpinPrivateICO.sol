@@ -156,7 +156,7 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
     LynchpinToken public lynT = LynchpinToken(0xB0B1685f55843D03739c7D9b0A230F1B7DcF03D5);
     address public beneficiary = 0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba;
 
-    uint256 public tokeninOneEther = 100;
+    uint256 public tokeninOneEther;
     uint256 public maxTokensToSell = 2000000 * 10**18;
     uint256 public tokenSold;
     bool crowdsaleClosed = false;
@@ -175,9 +175,12 @@ contract LynchpinPrivateICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cb
     event LogTokenRateUpdated(uint256 _newRate);
     event LogSaleClosed();
 
-    constructor() public
+    constructor(uint256 _tokeninOneEther) public
     {
+        require (_tokeninOneEther > 0);
         isWhitelisted[owner] = true;
+        tokeninOneEther = _tokeninOneEther;
+        emit LogTokenRateUpdated(_tokeninOneEther);
     }
 
     function () public payable
