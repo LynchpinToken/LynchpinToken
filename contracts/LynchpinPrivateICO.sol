@@ -61,7 +61,7 @@ contract LynchpinToken is ERC20
     string  public symbol      = "LYN";
     uint8   public decimals    = 18;
     uint    public totalSupply = 5000000 * (10 ** uint(decimals));
-    address public owner       = 0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba; // to be UPDATED
+    address public owner       = 0xAc983022185b95eF2B2C7219143483BD0C65Ecda;
 
     mapping (address => uint) public balanceOf;
     mapping (address => mapping (address => uint)) public allowance;
