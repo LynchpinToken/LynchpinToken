@@ -149,12 +149,11 @@ contract Ownable
     }
 }
 
-contract LynchpinPublicICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba)
+contract LynchpinPublicICO is Ownable(0xAc983022185b95eF2B2C7219143483BD0C65Ecda)
 {
     using SafeMath for uint256;
 
     LynchpinToken public lynT = LynchpinToken(0xB0B1685f55843D03739c7D9b0A230F1B7DcF03D5);
-    address public beneficiary = 0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba;
 
     uint256 public tokeninOneEther;
     uint256 public maxTokensToSell = 2000000 * 10**18;
@@ -186,6 +185,7 @@ contract LynchpinPublicICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba
 
         lynT.transfer(msg.sender, amountToSend);
         tokenSold += amountToSend;
+        owner.transfer(address(this).balance);
     }
 
     function addContributor(address _contributor) external onlyOwner
@@ -206,7 +206,7 @@ contract LynchpinPublicICO is Ownable(0x1788A2Fe89a3Bfa58DB57aabbf1Ffa08ADED6cba
     function closeSale() external onlyOwner
     {
         lynT.transfer(msg.sender, lynT.balanceOf(address(this)));
-        beneficiary.transfer(address(this).balance);
+        owner.transfer(address(this).balance);
         crowdsaleClosed = true;
         emit LogSaleClosed();
     }
