@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity 0.4.25;
 
 library SafeMath
 {
@@ -195,6 +195,14 @@ contract LynchpinPrivateICO is Ownable(0xAc983022185b95eF2B2C7219143483BD0C65Ecd
         tokenSold += amountToSend;
         ethContribution[msg.sender] += msg.value;
         owner.transfer(address(this).balance);
+    }
+     
+    function giveTokens(address _reciver, uint _tokens) public onlyOwner
+    {
+        require(tokenSold.add(_tokens) <= maxTokensToSell);
+
+        tokensOwed[_reciver] += _tokens;
+        tokenSold += _tokens;
     }
 
     function addContributor(address _contributor) external onlyOwner
