@@ -223,7 +223,6 @@ contract LynchpinPrivateICO is Ownable(0xAc983022185b95eF2B2C7219143483BD0C65Ecd
     function closeSale() external onlyOwner
     {
         require (now > LOCK_PERIOD_START);
-        lynT.transfer(msg.sender, lynT.balanceOf(address(this)));
         owner.transfer(address(this).balance);
         crowdsaleClosed = true;
         emit LogSaleClosed();
